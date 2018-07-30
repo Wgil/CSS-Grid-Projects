@@ -1,0 +1,212 @@
+$rows: 16;
+$block-size: 7vmin;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin    : 0;
+  padding   : 0;
+}
+
+body {
+  display        : grid;
+  justify-content: center;
+  align-content  : center;
+  background     : black;
+  height         : 100vh;
+}
+
+.wrapper {
+  overflow: hidden;
+  border: 10px solid white;
+}
+
+.board {
+  position             : relative;
+  display              : grid;
+  grid-template-columns: repeat(10, $block-size);
+  grid-template-rows   : repeat($rows, $block-size);
+  margin-top           : ($block-size * -3);
+}
+
+.block {
+  position: relative;
+  display : grid;
+
+  &:before, &:after {
+    content : '';
+    position: absolute;
+    width   : $block-size;
+    height  : $block-size;
+    border: 4px outset transparent;
+  }
+}
+
+.block--S {
+  $color: #00AA00;
+
+  &:before, &:after {
+    background  : $color;
+    border-color: $color;
+    bottom      : 100%;
+  }
+
+  &:before {
+    left: $block-size;
+  }
+
+  &:after {
+    right: -$block-size;
+  }
+}
+
+.block--Z {
+  $color: cyan;
+
+  &:before, &:after {
+    background  : $color;
+    bottom      : 100%;
+    border-color: $color;
+  }
+
+  &:before {
+    left: 0;
+  }
+
+  &:after {
+    left: -$block-size;
+  }
+}
+
+.block--L:before {
+  background  : #AA00AA;
+  bottom      : 100%;
+  right       : 0;
+  border-color:#AA00AA;
+}
+
+.block--T:before {
+  top         : $block-size;
+  left        : 100%;
+  background  : #AA5500;
+  border-color: #AA5500;
+}
+
+.block--J:before {
+  top         : 100%;
+  right       : 0;
+  background  : magenta;
+  border-color: magenta;
+}
+
+@mixin addBlock($block) {
+  $name           : map-get($block, name);
+  $color          : map-get($block, color);
+  $width          : map-get($block, width);
+  $height         : map-get($block, height);
+  $start-column   : map-get($block, start-column);
+  $end-row        : map-get($block, end-row);
+  $animation-delay: map-get($block, animation-delay);
+
+  .block--#{$name} {
+    grid-column          : $start-column / span $width;
+    grid-row             : 1 / span $height;
+    grid-template-columns: repeat($width, $block-size);
+    background           : $color;
+    animation-name       : slide-#{$name};
+    animation-delay      : $animation-delay;
+    animation-duration   : 4s;
+    animation-fill-mode  : forwards;
+
+    > div {
+      border: 4px outset $color;
+    }
+  }
+
+  @keyframes slide-#{$name} {
+    @for $i from 1 to $end-row+1 {
+      #{(100%/$end-row) * $i} {
+        grid-row-start: $i;
+      }
+    }
+  }
+}
+
+$block--O: (
+  name           : 'O',
+  color          : white,
+  width          : 2,
+  height         : 2,
+  start-column   : 1,
+  end-row        : 15,
+  animation-delay: 0s
+);
+
+$block--I: (
+  name           : 'I',
+  color          : #AA0000,
+  width          : 4,
+  height         : 1,
+  start-column   : 7,
+  end-row        : 16,
+  animation-delay: 4s
+);
+
+$block--S: (
+  name           : 'S',
+  color          : #00AA00,
+  width          : 2,
+  height         : 1,
+  start-column   : 5,
+  end-row        : 16,
+  animation-delay: 8s
+);
+
+$block--Z: (
+  name           : 'Z',
+  color          : cyan,
+  width          : 2,
+  height         : 1,
+  start-column   : 8,
+  end-row        : 15,
+  animation-delay: 12s
+);
+
+$block--J: (
+  name           : 'J',
+  color          : magenta,
+  width          : 3,
+  height         : 1,
+  start-column   : 7,
+  end-row        : 13,
+  animation-delay: 16s
+);
+
+$block--T: (
+  name           : 'T',
+  color          : #AA5500,
+  width          : 1,
+  height         : 3,
+  start-column   : 5,
+  end-row        : 13,
+  animation-delay: 20s
+);
+
+$block--L: (
+  name           : 'L',
+  color          : #AA00AA,
+  width          : 3,
+  height         : 1,
+  start-column   : 7,
+  end-row        : 12,
+  animation-delay: 24s
+);
+
+@include addBlock($block--O);
+@include addBlock($block--I);
+@include addBlock($block--S);
+@include addBlock($block--Z);
+@include addBlock($block--J);
+@include addBlock($block--T);
+@include addBlock($block--L);
